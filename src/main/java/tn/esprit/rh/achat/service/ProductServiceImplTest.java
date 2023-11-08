@@ -1,35 +1,47 @@
 package tn.esprit.rh.achat.service;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 import tn.esprit.devops_project.entities.Product;
-import tn.esprit.devops_project.entities.ProductCategory;
+import tn.esprit.devops_project.repositories.ProductRepository;
 import tn.esprit.devops_project.services.ProductServiceImpl;
 
-@SpringBootTest
-class ProductServiceImplTest {
+import java.util.Optional;
 
-    @Autowired
+@SpringBootTest
+class ProductServiceImplMockTest {
+
+    @Mock
+    private ProductRepository productRepository;
+
+    @InjectMocks
     private ProductServiceImpl productService;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.initMocks(this);
+    }
 
     @Test
     void testRetrieveProduct() {
         // Create a product
         Product product = new Product();
+        product.setIdProduct(1L);
         product.setTitle("Test Product");
-        // Set other properties as needed (if available)
 
-        // Save the product and retrieve its ID
-        product = productService.addProduct(product, 1L); // Replace 1L with a valid stock ID
+        // Mock the behavior of the productRepository
+        Mockito.when(productRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(product));
 
         // Call the method to be tested
-        Product retrievedProduct = productService.retrieveProduct(product.getIdProduct());
+        Product retrievedProduct = productService.retrieveProduct(1L);
 
-        // Assert that the retrieved product matches the expected product
         Assertions.assertNotNull(retrievedProduct);
         Assertions.assertEquals("Test Product", retrievedProduct.getTitle());
-        // Add more assertions for other properties as needed
     }
 }
